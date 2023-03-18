@@ -79,5 +79,4 @@ dependencies {
     implementation(libs.androidx.biometric.ktx)
 
     debugImplementation(libs.androidx.compose.ui.uiTooling)
-    androidTestImplementation(libs.androidx.compose.ui.uiTest)
 }

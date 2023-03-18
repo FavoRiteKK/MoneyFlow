@@ -1,17 +1,17 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'shared'
     spec.version                  = '1.0-SNAPSHOT'
-    spec.homepage                 = 'https://github.com/prof18/MoneyFlow'
+    spec.homepage                 = ''
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
-    spec.authors                  = 'Marco Gomiero'
-    spec.license                  = 'APACHE'
-    spec.summary                  = 'Kotlin Multiplatform Library for MoneyFlow'
+    spec.authors                  = ''
+    spec.license                  = ''
+    spec.summary                  = ''
 
     spec.vendored_frameworks      = "build/cocoapods/framework/shared.framework"
     spec.libraries                = "c++"
     spec.module_name              = "#{spec.name}_umbrella"
 
-    spec.ios.deployment_target = '15'
+                
 
                 
 

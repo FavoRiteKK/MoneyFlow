@@ -1,10 +1,8 @@
 import org.jetbrains.kotlin.konan.target.KonanTarget
-import org.jmailen.gradle.kotlinter.tasks.LintTask
 
 @Suppress("DSL_SCOPE_VIOLATION") // because of https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.native.cocoapods)
     alias(libs.plugins.android.library)
     id("com.squareup.sqldelight")
     id("co.touchlab.kermit")
@@ -16,12 +14,6 @@ val javaVersion: JavaVersion by rootProject.extra
 
 group = sharedLibGroup
 version = sharedLibVersion
-
-tasks {
-    named<LintTask>("lintKotlinCommonMain") {
-        exclude("com/prof18/moneyflow/db/**/*.kt")
-    }
-}
 
 android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -54,46 +46,6 @@ android {
 
 kotlin {
     android()
-    ios() {
-
-        binaries {
-            getTest("DEBUG").apply {
-                val frameworkPath =
-                    "$rootDir/dropbox-api/build/cocoapods/synthetic/IOS/dropbox_api/build/Release-iphonesimulator/ObjectiveDropboxOfficial"
-                linkerOpts("-F$frameworkPath")
-                linkerOpts("-rpath", frameworkPath)
-                linkerOpts("-framework", "ObjectiveDropboxOfficial")
-            }
-        }
-    }
-
-    cocoapods {
-        // Configure fields required by CocoaPods.
-        summary = "Kotlin Multiplatform Library for MoneyFlow"
-        homepage = "https://github.com/prof18/MoneyFlow"
-        authors = "Marco Gomiero"
-        license = "APACHE"
-        ios.deploymentTarget = "15"
-        podfile = project.file("../iosApp/Podfile")
-
-        framework {
-            isStatic = false
-            export(project(":dropbox-api"))
-            transitiveExport = true
-            linkerOpts.add("-lsqlite3")
-
-            val isSimulator =
-                this.target.konanTarget == KonanTarget.IOS_X64 || this.target.konanTarget == KonanTarget.IOS_SIMULATOR_ARM64
-            val frameworkPath = if (isSimulator) {
-                "$rootDir/dropbox-api/build/cocoapods/synthetic/IOS/dropbox_api/build/Release-iphonesimulator/ObjectiveDropboxOfficial"
-            } else {
-                "$rootDir/dropbox-api/build/cocoapods/synthetic/IOS/dropbox_api/build/Release-iphoneos/ObjectiveDropboxOfficial"
-            }
-            linkerOpts("-F$frameworkPath")
-            linkerOpts("-rpath", frameworkPath)
-            linkerOpts("-framework", "ObjectiveDropboxOfficial")
-        }
-    }
 
     sourceSets {
 
@@ -117,42 +69,11 @@ kotlin {
                 implementation(libs.touchlab.kermit)
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-                implementation(libs.koin.koinTest)
-                implementation(libs.kotlinx.coroutine.test)
-                implementation(libs.cashapp.turbine)
-                implementation(libs.russhwolf.multiplatform.settings.test)
 
-            }
-        }
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.security.crypto)
                 implementation(libs.squareup.sqldelight.androidDriver)
-            }
-        }
-        val androidTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(libs.kotlin.kotlinTest)
-                implementation(libs.kotlin.kotlinTestJunit)
-                implementation(libs.bundles.androidx.test)
-                implementation(libs.kotlinx.coroutine.test)
-                implementation(libs.squareup.sqldelight.sqliteDriver)
-            }
-        }
-        val iosMain by getting {
-            dependencies {
-                implementation(libs.squareup.sqldelight.nativeDriver)
-                implementation(libs.kotlinx.coroutine.core)
-            }
-        }
-        val iosTest by getting {
-            dependencies {
-                implementation(libs.squareup.sqldelight.nativeDriver)
             }
         }
     }
